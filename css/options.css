@@ -1,0 +1,19 @@
+#container {
+	width: 70%;
+	margin: 50px auto;
+	text-align: center;
+}
+
+#minutes {
+	width: 100px;
+	margin-right: 7px;
+}
+
+#minuterow {
+	width: max-content;
+	margin: auto;
+}
+
+#title {
+	margin-bottom: 40px;
+}

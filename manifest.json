@@ -1,0 +1,28 @@
+{
+  "manifest_version": 2,
+  "name": "YouTube Time",
+  "description": "Assign limits to the time you spend on YouTube to prevent procrastination",
+  "version": "1.2",
+  "icons":
+  {
+    "128": "images/icon - 128.png"
+  },
+  "background": {
+  	"scripts": ["background.js"]
+  },
+  "content_scripts": [
+    {
+        "matches": ["*://*.youtube.com/*"],
+        "js": ["saveVideo.js"]
+    }
+  ],
+  "browser_action": {
+  	"default_icon": "/images/icon.png",
+  	"default_popup": "/pages/popup.html"
+  },
+  "options_page": "/pages/options.html",
+  "permissions": [
+    "tabs",
+    "storage"
+  ]
+}
