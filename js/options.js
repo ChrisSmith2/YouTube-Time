@@ -18,7 +18,10 @@ $("#saveMinutes").click(function() {
 		minutes = 720;
 	}
 
-	chrome.storage.local.set({"timeLimit": minutes}, function() {
+	chrome.storage.local.set({"timeLimit": minutes, "timeLeft": minutes*60}, function() {
+		chrome.runtime.sendMessage({
+			msg: "timeLimitUpdated"
+		});
 		alert("Settings Saved");
 	});
 });
