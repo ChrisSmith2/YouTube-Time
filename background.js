@@ -69,11 +69,14 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	if (request.msg == "override") {
 		override = request.value;
 		// console.log("override")
-		chrome.storage.local.set({"override":request.value, "tempOverride":true})
+		chrome.storage.local.set({"override":request.value, "tempOverride":true}, function() {
+			chrome.runtime.sendMessage({
+				msg: "goToSavedVideo"
+			});			
+		});
 	} else if (request.msg == "checkReset") {
 		checkReset();
 	} else if (request.msg == "timeLimitUpdated") {
-		console.log("updating")
 		chrome.storage.local.get({"timeLeft":timeLeft}, function(data) {
 			timeLeft = data.timeLeft;
 		});
