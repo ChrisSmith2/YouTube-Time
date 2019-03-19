@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "YouTube Time",
   "description": "Assign limits to the time you spend on YouTube to prevent procrastination",
-  "version": "1.2",
+  "version": "1.3",
   "icons":
   {
     "128": "images/icon - 128.png"
