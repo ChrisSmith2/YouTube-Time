@@ -33,17 +33,7 @@ chrome.tabs.onActivated.addListener(function(activeInfo) {
 	checkReset();
 	chrome.tabs.get(activeInfo.tabId, function(tab){
 		currentTab = tab;
-		if (isYoutube(tab.url) && !onYoutube) {
-			if (!override) {
-				onYoutube = true;
-				startTime();	
-			} else {
-				checkOverride(tab.url);
-			}
-		} else if (!isYoutube(tab.url) && onYoutube && !override) {
-			onYoutube = false;
-			stopTime();
-		}
+		checkTabForYouTube(tab.url)
 	});
 });
 
@@ -51,17 +41,49 @@ chrome.tabs.onUpdated.addListener(function(tabId, changedInfo, tab) {
 	checkReset();
 	if(tab.active && changedInfo.url){
 		currentTab = tab;
-		if (isYoutube(changedInfo.url) && !onYoutube) {
-			if (!override) {
-				onYoutube = true;
-				startTime();	
-			} else {
-				checkOverride(changedInfo.url);
+		checkTabForYouTube(changedInfo.url)
+	}
+});
+
+window.setInterval(checkBrowserFocus, 1000);  
+
+function checkBrowserFocus(){
+	if(typeof timer != 'undefined') {
+		chrome.windows.getCurrent(function(browser){
+			if(browser.focused) {
+				if(!onYoutube) {
+					var getInfo = {populate: true};
+					chrome.windows.getCurrent(getInfo, function(window) {
+						for(var i = 0; i < window.tabs.length; i++) {
+							if(window.tabs[i].active) {
+								checkTabForYouTube(window.tabs[i].url)
+							}
+						}
+					});
+				}
+			} else if(onYoutube) {
+				// console.log("now stop")
+				onYoutube = false;
+				stopTime();
+		  }
+		})
+	}
+}
+
+chrome.windows.onFocusChanged.addListener(function(windowId) {
+	checkReset();
+	if(windowId == chrome.windows.WINDOW_ID_NONE && typeof timer != 'undefined') {
+		onYoutube = false;
+		stopTime();
+	} else if(windowId != chrome.windows.WINDOW_ID_NONE) {
+		var getInfo = {populate: true};
+		chrome.windows.getCurrent(getInfo, function(window) {
+			for(var i = 0; i < window.tabs.length; i++) {
+				if(window.tabs[i].active) {
+					checkTabForYouTube(window.tabs[i].url)
+				}
 			}
-		} else if (!isYoutube(changedInfo.url) && onYoutube && !override) {
-			onYoutube = false;
-			stopTime();
-		}
+		});
 	}
 });
 
@@ -112,11 +134,13 @@ function updateTime() {
 }
 
 function startTime() {
+	// console.log("start", timeLeft)
 	chrome.browserAction.setBadgeText({"text": formatTime(timeLeft)});
 	timer = setInterval(updateTime, 1000);
 }
 
 function stopTime() {
+	// console.log("stopped", timeLeft)
 	clearInterval(timer);
 	chrome.browserAction.setBadgeText({"text": ""});
 }
@@ -169,11 +193,10 @@ function blockRedirect() {
 function checkReset() {
 	chrome.storage.local.get("lastDate", function(data) {
 		var today = new Date();
-		today.setHours(0,0,0,0);
-		if (!data.lastDate || today.toString() != data.lastDate) {
+		if(!data.lastDate || (today.getDate().toString() != data.lastDate && today.getHours() >= 6)) {
 			chrome.storage.local.get({"timeLimit":30}, function(data) {
 
-				chrome.storage.local.set({"lastDate":today.toString(), "override":false, "timeLeft":data.timeLimit*60}, function () {
+				chrome.storage.local.set({"lastDate":today.getDate().toString(), "override":false, "timeLeft":data.timeLimit*60}, function () {
 					chrome.runtime.sendMessage({
 						msg: "checkDone"
 					});
@@ -220,4 +243,19 @@ function urlNoTime(url) {
 		return arr[0];
 	}
 	return null
+}
+
+function checkTabForYouTube(url) {
+	// console.log("checkTabForYouTube")
+	if (isYoutube(url) && !onYoutube) {
+		if (!override) {
+			onYoutube = true;
+			startTime();	
+		} else {
+			checkOverride(url);
+		}
+	} else if (!isYoutube(url) && onYoutube && !override) {
+		onYoutube = false;
+		stopTime();
+	}
 }
