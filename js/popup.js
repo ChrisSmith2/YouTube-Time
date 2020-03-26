@@ -2,6 +2,12 @@ chrome.runtime.sendMessage({
 	msg: "popupOpen"
 });
 
+window.onfocus = function() {
+	chrome.runtime.sendMessage({
+		msg: "popupOpen"
+	});
+}
+
 window.onblur = function() {
 	chrome.runtime.sendMessage({
 		msg: "popupUnfocus"

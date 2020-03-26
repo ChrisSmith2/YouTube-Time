@@ -62,12 +62,21 @@ function checkBrowserFocus(){
 						}
 					});
 				}
-			} else if(onYoutube) {
-				if (popupOpen)
-					return;
+			} else {
+				if (popupOpen) {
+					var getInfo = {populate: true};
+					chrome.windows.getLastFocused(getInfo, function(window) {
+						for(var i = 0; i < window.tabs.length; i++) {
+							if(window.tabs[i].active) {
+								checkTabForYouTube(window.tabs[i].url)
+							}
+						}
+					});
+				} else if (onYoutube) {
+					onYoutube = false;
+					stopTime();
+				}
 
-				onYoutube = false;
-				stopTime();
 		  	}
 		})
 	}
