@@ -1,4 +1,14 @@
 chrome.runtime.sendMessage({
+	msg: "popupOpen"
+});
+
+window.onblur = function() {
+	chrome.runtime.sendMessage({
+		msg: "popupUnfocus"
+	});
+}
+
+chrome.runtime.sendMessage({
 	msg: "checkReset"
 });
 

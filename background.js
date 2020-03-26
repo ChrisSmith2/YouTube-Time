@@ -10,6 +10,7 @@ var override = false;
 var onYoutube = false;
 var timeLeft = 1800;
 var currentTab;
+var popupOpen = false;
 // chrome.storage.local.set({"lastDate":null}); //for debugging
 
 checkReset();
@@ -49,11 +50,11 @@ window.setInterval(checkBrowserFocus, 1000);
 
 function checkBrowserFocus(){
 	if(typeof timer != 'undefined') {
-		chrome.windows.getCurrent(function(browser){
-			if(browser.focused) {
+		chrome.windows.getLastFocused(function(window){
+			if(window && window.focused) {
 				if(!onYoutube) {
 					var getInfo = {populate: true};
-					chrome.windows.getCurrent(getInfo, function(window) {
+					chrome.windows.getLastFocused(getInfo, function(window) {
 						for(var i = 0; i < window.tabs.length; i++) {
 							if(window.tabs[i].active) {
 								checkTabForYouTube(window.tabs[i].url)
@@ -62,22 +63,27 @@ function checkBrowserFocus(){
 					});
 				}
 			} else if(onYoutube) {
-				// console.log("now stop")
+				if (popupOpen)
+					return;
+
 				onYoutube = false;
 				stopTime();
-		  }
+		  	}
 		})
 	}
 }
 
 chrome.windows.onFocusChanged.addListener(function(windowId) {
 	checkReset();
-	if(windowId == chrome.windows.WINDOW_ID_NONE && typeof timer != 'undefined') {
+	if(windowId == chrome.windows.WINDOW_ID_NONE && typeof timer != 'undefined' && onYoutube) {
+		if (popupOpen)
+			return;
+
 		onYoutube = false;
 		stopTime();
 	} else if(windowId != chrome.windows.WINDOW_ID_NONE) {
 		var getInfo = {populate: true};
-		chrome.windows.getCurrent(getInfo, function(window) {
+		chrome.windows.getLastFocused(getInfo, function(window) {
 			for(var i = 0; i < window.tabs.length; i++) {
 				if(window.tabs[i].active) {
 					checkTabForYouTube(window.tabs[i].url)
@@ -102,6 +108,10 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		chrome.storage.local.get({"timeLeft":timeLeft}, function(data) {
 			timeLeft = data.timeLeft;
 		});
+	} else if (request.msg == "popupOpen") {
+		popupOpen = true;
+	} else if (request.msg == "popupUnfocus") {
+		popupOpen = false;
 	}
 });
 
