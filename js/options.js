@@ -2,6 +2,11 @@ chrome.storage.local.get({"timeLimit":30}, function(data) {
 	$("#minutes").val(data.timeLimit);
 });
 
+chrome.storage.local.get({"pauseOutOfFocus":false}, function(data) {
+	if (data.pauseOutOfFocus == true)
+		$('#pauseOutOfFocus').prop('checked', true);
+});
+
 $("#saveMinutes").click(function() {
 	let minutes = Number($("#minutes").val());
 
@@ -20,6 +25,16 @@ $("#saveMinutes").click(function() {
 		chrome.runtime.sendMessage({
 			msg: "timeLimitUpdated"
 		});
-		alert("Settings Saved");
+		alert("Limit Saved");
 	});
+});
+
+$('#pauseOutOfFocus').change(function() {
+	if (this.checked) {
+		chrome.storage.local.set({"pauseOutOfFocus": true});
+		chrome.runtime.sendMessage({msg: "pauseOutOfFocus", val: true});
+	} else {
+		chrome.storage.local.set({"pauseOutOfFocus": false});
+		chrome.runtime.sendMessage({msg: "pauseOutOfFocus", val: false});
+	}
 });

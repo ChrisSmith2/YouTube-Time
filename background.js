@@ -11,12 +11,19 @@ var onYoutube = false;
 var timeLeft = 1800;
 var currentTab;
 var popupOpen = false;
+var pauseOutOfFocus = false;
+var checkBrowserFocusTimer = null;
 // chrome.storage.local.set({"lastDate":null}); //for debugging
 
 checkReset();
 
-chrome.storage.local.get({"override":override}, function(data) {
+chrome.storage.local.get({"override":override, "pauseOutOfFocus":pauseOutOfFocus}, function(data) {
 	override = data.override;
+	pauseOutOfFocus = data.pauseOutOfFocus;
+
+	if (pauseOutOfFocus) {
+		checkBrowserFocusTimer = setInterval(checkBrowserFocus, 1000);
+	}
 });
 
 chrome.storage.local.get({"timeLeft":timeLeft}, function(data) {
@@ -45,8 +52,6 @@ chrome.tabs.onUpdated.addListener(function(tabId, changedInfo, tab) {
 		checkTabForYouTube(changedInfo.url)
 	}
 });
-
-window.setInterval(checkBrowserFocus, 1000);  
 
 function checkBrowserFocus(){
 	if(typeof timer != 'undefined') {
@@ -84,21 +89,24 @@ function checkBrowserFocus(){
 
 chrome.windows.onFocusChanged.addListener(function(windowId) {
 	checkReset();
-	if(windowId == chrome.windows.WINDOW_ID_NONE && typeof timer != 'undefined' && onYoutube) {
-		if (popupOpen)
-			return;
 
-		onYoutube = false;
-		stopTime();
-	} else if(windowId != chrome.windows.WINDOW_ID_NONE) {
-		var getInfo = {populate: true};
-		chrome.windows.getLastFocused(getInfo, function(window) {
-			for(var i = 0; i < window.tabs.length; i++) {
-				if(window.tabs[i].active) {
-					checkTabForYouTube(window.tabs[i].url)
+	if (pauseOutOfFocus) {
+		if(windowId == chrome.windows.WINDOW_ID_NONE && typeof timer != 'undefined' && onYoutube) {
+			if (popupOpen)
+				return;
+
+			onYoutube = false;
+			stopTime();
+		} else if(windowId != chrome.windows.WINDOW_ID_NONE) {
+			var getInfo = {populate: true};
+			chrome.windows.getLastFocused(getInfo, function(window) {
+				for(var i = 0; i < window.tabs.length; i++) {
+					if(window.tabs[i].active) {
+						checkTabForYouTube(window.tabs[i].url)
+					}
 				}
-			}
-		});
+			});
+		}
 	}
 });
 
@@ -121,6 +129,16 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		popupOpen = true;
 	} else if (request.msg == "popupUnfocus") {
 		popupOpen = false;
+	} else if (request.msg == "pauseOutOfFocus") {
+		if (request.val == true) {
+			pauseOutOfFocus = true;
+			if (checkBrowserFocusTimer == null)
+				checkBrowserFocusTimer = setInterval(checkBrowserFocus, 1000);
+		} else {
+			pauseOutOfFocus = false;
+			clearInterval(checkBrowserFocusTimer);
+			checkBrowserFocusTimer = null;
+		}
 	}
 });
 

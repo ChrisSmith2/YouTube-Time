@@ -9,10 +9,14 @@
 <body>
 	<div id="container">
 		<h1 id="title">YouTube Time Options</h1>
-		<label for="minutes"><h4>Minutes Allowed Per Day: </h4></label>
-		<div id="minuterow" class="row">
+		<label for="minutes"><h4>Minutes allowed per day: </h4></label>
+		<div id="minuterow" class="row mb-3">
 			<input id="minutes" class="form-control" type="number" min="0" max="1439">
 			<input type="submit" id="saveMinutes" value="Save Limit" class="btn btn-info">
+		</div>
+		<div class="row justify-content-center">
+			<label for="pauseOutOfFocus"><h4>Pause timer when YouTube is minimized/out of focus: </h4></label>
+			<input id="pauseOutOfFocus" class="big-checkbox ml-2" type="checkbox">
 		</div>
 	</div>
 	<script type="text/javascript" src="../js/options.js"></script>
