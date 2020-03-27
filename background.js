@@ -296,7 +296,23 @@ function checkTabForYouTube(url) {
 			checkOverride(url);
 		}
 	} else if (!isYoutube(url) && onYoutube && !override) {
-		onYoutube = false;
-		stopTime();
+		if (pauseOutOfFocus) {
+			onYoutube = false;
+			stopTime();
+		} else {
+			chrome.tabs.query({active: true}, function(tabs) {
+				var youtubeOpenOnAnyWindow = false;
+				for (var i = 0; i < tabs.length; i++) {
+					if (isYoutube(tabs[i].url)) {
+						youtubeOpenOnAnyWindow = true;
+						break;
+					}
+				}
+				if (!youtubeOpenOnAnyWindow) {
+					onYoutube = false;
+					stopTime();
+				}
+			});
+		}
 	}
 }
