@@ -134,10 +134,17 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			pauseOutOfFocus = true;
 			if (checkBrowserFocusTimer == null)
 				checkBrowserFocusTimer = setInterval(checkBrowserFocus, 1000);
+
+			// stop timer because active window must be settings page
+			onYoutube = false;
+			stopTime();
 		} else {
 			pauseOutOfFocus = false;
 			clearInterval(checkBrowserFocusTimer);
 			checkBrowserFocusTimer = null;
+
+			// see if window is open that has YouTube
+			checkWindowsForTimerStart();
 		}
 	}
 });
@@ -300,19 +307,39 @@ function checkTabForYouTube(url) {
 			onYoutube = false;
 			stopTime();
 		} else {
-			chrome.tabs.query({active: true}, function(tabs) {
-				var youtubeOpenOnAnyWindow = false;
-				for (var i = 0; i < tabs.length; i++) {
-					if (isYoutube(tabs[i].url)) {
-						youtubeOpenOnAnyWindow = true;
-						break;
-					}
-				}
-				if (!youtubeOpenOnAnyWindow) {
-					onYoutube = false;
-					stopTime();
-				}
-			});
+			checkWindowsForTimerStop();
 		}
 	}
+}
+
+function checkWindowsForTimerStart() {
+	chrome.tabs.query({active: true}, function(tabs) {
+		var youtubeOpenOnAnyWindow = false;
+		for (var i = 0; i < tabs.length; i++) {
+			if (isYoutube(tabs[i].url)) {
+				youtubeOpenOnAnyWindow = true;
+				break;
+			}
+		}
+		if (youtubeOpenOnAnyWindow) {
+			onYoutube = true;
+			startTime();
+		}
+	});
+}
+
+function checkWindowsForTimerStop() {
+	chrome.tabs.query({active: true}, function(tabs) {
+		var youtubeOpenOnAnyWindow = false;
+		for (var i = 0; i < tabs.length; i++) {
+			if (isYoutube(tabs[i].url)) {
+				youtubeOpenOnAnyWindow = true;
+				break;
+			}
+		}
+		if (!youtubeOpenOnAnyWindow) {
+			onYoutube = false;
+			stopTime();
+		}
+	});
 }
