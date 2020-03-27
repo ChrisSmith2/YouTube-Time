@@ -7,6 +7,11 @@ chrome.storage.local.get({"pauseOutOfFocus":false}, function(data) {
 		$('#pauseOutOfFocus').prop('checked', true);
 });
 
+
+chrome.storage.local.get({"resetTime":"00:00"}, function(data) {
+	$("#time").val(data.resetTime);
+});
+
 $("#saveMinutes").click(function() {
 	let minutes = Number($("#minutes").val());
 
@@ -28,6 +33,13 @@ $("#saveMinutes").click(function() {
 		alert("Limit Saved");
 	});
 });
+
+$("#saveTime").click(function() {
+	chrome.storage.local.set({"resetTime": $("#time").val()}, function() {
+		alert("Time Saved");
+	});
+});
+
 
 $('#pauseOutOfFocus').change(function() {
 	if (this.checked) {

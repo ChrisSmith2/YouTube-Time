@@ -9,6 +9,11 @@
 	margin-right: 7px;
 }
 
+#time {
+	width: 130px;
+	margin-right: 7px;
+}
+
 #minuterow {
 	width: max-content;
 	margin: auto;

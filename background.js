@@ -13,7 +13,7 @@ var currentTab;
 var popupOpen = false;
 var pauseOutOfFocus = false;
 var checkBrowserFocusTimer = null;
-// chrome.storage.local.set({"lastDate":null}); //for debugging
+// chrome.storage.local.set({"lastDate":(new Date().getDate()-1).toString()}); //for debugging
 
 checkReset();
 
@@ -168,6 +168,7 @@ function updateTime() {
 			time: timeLeft
 		});
 	}
+	checkReset();
 }
 
 function startTime() {
@@ -228,9 +229,12 @@ function blockRedirect() {
 }
 
 function checkReset() {
-	chrome.storage.local.get("lastDate", function(data) {
+	chrome.storage.local.get({"lastDate":null, "resetTime":"00:00"}, function(data) {
 		var today = new Date();
-		if(!data.lastDate || (today.getDate().toString() != data.lastDate && today.getHours() >= 6)) {
+		var resetTime = data.resetTime.split(":");
+		var resetHour = parseInt(resetTime[0]);
+		var resetMinute = parseInt(resetTime[1]);
+		if(!data.lastDate || (today.getDate().toString() != data.lastDate && today.getHours() >= resetHour && today.getMinutes() >= resetMinute)) {
 			chrome.storage.local.get({"timeLimit":30}, function(data) {
 
 				chrome.storage.local.set({"lastDate":today.getDate().toString(), "override":false, "timeLeft":data.timeLimit*60}, function () {
