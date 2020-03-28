@@ -48,12 +48,13 @@ function formatTime(totalSeconds) {
 	var result = "";
 	if (hours > 0) {
 		result += hours + ":";
-	}
-	if (minutes > 0) {
+		if (minutes < 10)
+			result += "0";
 		result += minutes + ":";
 	} else {
-		result += "0:";
+		result += minutes + ":";
 	}
+
 	if (seconds < 10) {
 		result += "0";
 	}
