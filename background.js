@@ -135,9 +135,11 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			if (checkBrowserFocusTimer == null)
 				checkBrowserFocusTimer = setInterval(checkBrowserFocus, 1000);
 
-			// stop timer because active window must be settings page
-			onYoutube = false;
-			stopTime();
+			if(typeof timer != 'undefined') {
+				// stop timer because active window must be settings page
+				onYoutube = false;
+				stopTime();
+			}
 		} else {
 			pauseOutOfFocus = false;
 			clearInterval(checkBrowserFocusTimer);
