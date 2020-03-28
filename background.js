@@ -148,6 +148,18 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			// see if window is open that has YouTube
 			checkWindowsForTimerStart();
 		}
+	} else if (request.msg == "resetTimeUpdated") {
+		chrome.storage.local.get({"resetTime":"00:00"}, function(data) {
+			var now = new Date();
+			var resetTime = data.resetTime.split(":");
+			var resetHour = parseInt(resetTime[0]);
+			var resetMinute = parseInt(resetTime[1]);
+			if (now.getHours() <= resetHour && now.getMinutes() < resetMinute) {
+				// Ensures that time resets when changing resetTime to time in the future
+				// Allows user to test different reset times and see the timer reset
+				chrome.storage.local.set({"lastDate":"-1"});
+			}
+		});
 	}
 });
 

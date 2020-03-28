@@ -36,6 +36,9 @@ $("#saveMinutes").click(function() {
 
 $("#saveTime").click(function() {
 	chrome.storage.local.set({"resetTime": $("#time").val()}, function() {
+		chrome.runtime.sendMessage({
+			msg: "resetTimeUpdated"
+		});
 		alert("Time Saved");
 	});
 });
