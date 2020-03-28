@@ -318,8 +318,10 @@ function checkTabForYouTube(url) {
 		}
 	} else if (!isYoutube(url) && onYoutube && !override) {
 		if (pauseOutOfFocus) {
-			onYoutube = false;
-			stopTime();
+			if (!popupOpen) {
+				onYoutube = false;
+				stopTime();	
+			}
 		} else {
 			checkWindowsForTimerStop();
 		}
