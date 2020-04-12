@@ -7,6 +7,10 @@ chrome.storage.local.get({"pauseOutOfFocus":false}, function(data) {
 		$('#pauseOutOfFocus').prop('checked', true);
 });
 
+chrome.storage.local.get({"overrideCount":1}, function(data) {
+	$("#overrideCount").val(data.overrideCount);
+});
+
 
 chrome.storage.local.get({"resetTime":"00:00"}, function(data) {
 	$("#time").val(data.resetTime);
@@ -31,6 +35,15 @@ $("#saveMinutes").click(function() {
 			msg: "timeLimitUpdated"
 		});
 		alert("Limit Saved");
+	});
+});
+
+$("#saveOverrideCount").click(function() {
+	chrome.storage.local.set({"overrideCount": $("#overrideCount").val(), "currentOverrideCount": $("#overrideCount").val()}, function() {
+		chrome.runtime.sendMessage({
+			msg: "overrideCountUpdated"
+		});
+		alert("Max Overrides count Saved");
 	});
 });
 
