@@ -1,3 +1,5 @@
+ga('send', 'pageview', '/options.html');
+
 chrome.storage.local.get({"timeLimit":30}, function(data) {
 	$("#minutes").val(data.timeLimit);
 });
@@ -29,6 +31,7 @@ $("#saveMinutes").click(function() {
 		minutes = 1439;
 	}
 	$("#minutes").val(minutes);
+	ga('send', {hitType: 'event', eventCategory: 'Settings', eventAction: 'Updated time limit', eventValue: minutes});
 
 	chrome.storage.local.set({"timeLimit": minutes, "timeLeft": minutes*60}, function() {
 		chrome.runtime.sendMessage({
@@ -48,7 +51,11 @@ $("#saveOverrideCount").click(function() {
 });
 
 $("#saveTime").click(function() {
-	chrome.storage.local.set({"resetTime": $("#time").val()}, function() {
+	var resetTime = $("#time").val();
+	var resetHour = parseInt(resetTime.split(":")[0]);
+	var resetMinute = parseInt(resetTime.split(":")[1]);
+	ga('send', {hitType: 'event', eventCategory: 'Settings', eventAction: 'Updated reset time', eventLabel: resetTime, eventValue: resetHour*60+resetMinute});
+	chrome.storage.local.set({"resetTime": resetTime}, function() {
 		chrome.runtime.sendMessage({
 			msg: "resetTimeUpdated"
 		});
@@ -59,9 +66,11 @@ $("#saveTime").click(function() {
 
 $('#pauseOutOfFocus').change(function() {
 	if (this.checked) {
+		ga('send', {hitType: 'event', eventCategory: 'Settings', eventAction: 'Updated pause out of focus', eventLabel: "true", eventValue: 1});
 		chrome.storage.local.set({"pauseOutOfFocus": true});
 		chrome.runtime.sendMessage({msg: "pauseOutOfFocus", val: true});
 	} else {
+		ga('send', {hitType: 'event', eventCategory: 'Settings', eventAction: 'Updated pause out of focus', eventLabel: "false", eventValue: 0});
 		chrome.storage.local.set({"pauseOutOfFocus": false});
 		chrome.runtime.sendMessage({msg: "pauseOutOfFocus", val: false});
 	}

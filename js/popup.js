@@ -1,3 +1,5 @@
+ga('send', 'pageview', '/popup.html');
+
 chrome.runtime.sendMessage({
 	msg: "popupOpen"
 });

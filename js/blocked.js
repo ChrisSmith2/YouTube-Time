@@ -1,3 +1,5 @@
+ga('send', 'pageview', '/blocked.html');
+
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	if (request.msg == "goToSavedVideo") {
 		chrome.storage.local.get("savedVideoURL", function(data) {
@@ -9,7 +11,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 $("#override").click(function() {
 	var answer = confirm("Are you sure you need to use YouTube?")
 	if (answer) {
-
+    ga('send', {hitType: 'event', eventCategory: 'Blocked page', eventAction: 'Override'});
 		// update currentOverrideCount
 		chrome.storage.local.get({"currentOverrideCount":-1}, function(data) {
 			chrome.storage.local.set({"currentOverrideCount": data.currentOverrideCount - 1}, function()
