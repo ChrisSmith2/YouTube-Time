@@ -22,10 +22,13 @@
 			<input type="submit" id="saveTime" value="Save Time" class="btn btn-info">
 		</div>
 
-		<label for="minutes"><h4>How many overrides allowed per day:</h4></label>
-		<div id="minuterow" class="row mb-3">
-			<input id="overrideCount" class="form-control" type="number" min="0" max="1439">
-			<input type="submit" id="saveOverrideCount" value="Save Override Count" class="btn btn-info">
+		<div class="row justify-content-center">
+			<label for="limitOverrides"><h4>Limit the number of overrides allowed per day:</h4></label>
+			<input id="limitOverrides" class="big-checkbox ml-2" type="checkbox">
+		</div>
+		<div id="overrideLimitRow" class="row mb-3" style="visibility: hidden;">
+			<input id="overrideLimit" class="form-control" type="number" min="0" max="1000">
+			<input type="submit" id="saveOverrideLimit" value="Save Override Limit" class="btn btn-info">
 		</div>
 
 		<div class="row justify-content-center">

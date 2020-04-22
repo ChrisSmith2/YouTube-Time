@@ -9,7 +9,7 @@
 	margin-right: 7px;
 }
 
-#overrideCount {
+#overrideLimit {
 	width: 100px;
 	margin-right: 7px;
 }
@@ -19,7 +19,7 @@
 	margin-right: 7px;
 }
 
-#minuterow {
+#minuterow, #overrideLimitRow {
 	width: max-content;
 	margin: auto;
 }

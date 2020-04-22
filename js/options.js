@@ -1,5 +1,12 @@
 ga('send', 'pageview', '/options.html');
 
+chrome.storage.local.get({"limitOverrides":true}, function(data) {
+	if (data.limitOverrides == true) {
+		$('#limitOverrides').prop('checked', true);
+		$('#overrideLimitRow').css("visibility", "visible");
+	}
+});
+
 chrome.storage.local.get({"timeLimit":30}, function(data) {
 	$("#minutes").val(data.timeLimit);
 });
@@ -9,8 +16,9 @@ chrome.storage.local.get({"pauseOutOfFocus":false}, function(data) {
 		$('#pauseOutOfFocus').prop('checked', true);
 });
 
-chrome.storage.local.get({"overrideCount":1}, function(data) {
-	$("#overrideCount").val(data.overrideCount);
+
+chrome.storage.local.get({"overrideLimit":10}, function(data) {
+	$("#overrideLimit").val(data.overrideLimit);
 });
 
 
@@ -41,12 +49,18 @@ $("#saveMinutes").click(function() {
 	});
 });
 
-$("#saveOverrideCount").click(function() {
-	chrome.storage.local.set({"overrideCount": $("#overrideCount").val(), "currentOverrideCount": $("#overrideCount").val()}, function() {
-		chrome.runtime.sendMessage({
-			msg: "overrideCountUpdated"
-		});
-		alert("Max Overrides count Saved");
+$("#saveOverrideLimit").click(function() {
+	let overrideLimit = Number($("#overrideLimit").val());
+	if (overrideLimit < 0) {
+		overrideLimit = 0;
+	} else if (overrideLimit > 1000) {
+		overrideLimit = 1000;
+	}
+	$("#overrideLimit").val(overrideLimit);
+	ga('send', {hitType: 'event', eventCategory: 'Settings', eventAction: 'Updated override limit', eventValue: overrideLimit});
+
+	chrome.storage.local.set({"overrideLimit": overrideLimit, "currentOverrideCount": overrideLimit}, function() {
+		alert("Override Limit Saved");
 	});
 });
 
@@ -73,5 +87,17 @@ $('#pauseOutOfFocus').change(function() {
 		ga('send', {hitType: 'event', eventCategory: 'Settings', eventAction: 'Updated pause out of focus', eventLabel: "false", eventValue: 0});
 		chrome.storage.local.set({"pauseOutOfFocus": false});
 		chrome.runtime.sendMessage({msg: "pauseOutOfFocus", val: false});
+	}
+});
+
+$('#limitOverrides').change(function() {
+	if (this.checked) {
+		$('#overrideLimitRow').css("visibility", "visible");
+		ga('send', {hitType: 'event', eventCategory: 'Settings', eventAction: 'Updated limit overrides toggle', eventLabel: "true", eventValue: 1});
+		chrome.storage.local.set({"limitOverrides": true});
+	} else {
+		$('#overrideLimitRow').css("visibility", "hidden");
+		ga('send', {hitType: 'event', eventCategory: 'Settings', eventAction: 'Updated limit overrides toggle', eventLabel: "false", eventValue: 0});
+		chrome.storage.local.set({"limitOverrides": false});
 	}
 });
