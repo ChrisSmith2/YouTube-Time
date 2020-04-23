@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "YouTube Time",
   "description": "Prevent procrastination by setting a daily time limit for your YouTube usage.",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "icons":
   {
     "128": "images/icon - 128.png"
