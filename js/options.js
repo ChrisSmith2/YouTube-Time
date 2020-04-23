@@ -17,7 +17,7 @@ chrome.storage.local.get({"pauseOutOfFocus":false}, function(data) {
 });
 
 
-chrome.storage.local.get({"overrideLimit":10}, function(data) {
+chrome.storage.local.get({"overrideLimit":5}, function(data) {
 	$("#overrideLimit").val(data.overrideLimit);
 });
 
