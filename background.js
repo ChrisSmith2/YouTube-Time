@@ -11,7 +11,7 @@ var onYoutube = false;
 var timeLeft = 1800;
 var currentTab;
 var popupOpen = false;
-var pauseOutOfFocus = false;
+var pauseOutOfFocus = true;
 var checkBrowserFocusTimer = null;
 // chrome.storage.local.set({"lastDate":(new Date().getDate()-1).toString()}); //for debugging
 

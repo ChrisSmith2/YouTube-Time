@@ -11,7 +11,7 @@ chrome.storage.local.get({"timeLimit":30}, function(data) {
 	$("#minutes").val(data.timeLimit);
 });
 
-chrome.storage.local.get({"pauseOutOfFocus":false}, function(data) {
+chrome.storage.local.get({"pauseOutOfFocus":true}, function(data) {
 	if (data.pauseOutOfFocus == true)
 		$('#pauseOutOfFocus').prop('checked', true);
 });
