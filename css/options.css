@@ -9,12 +9,17 @@
 	margin-right: 7px;
 }
 
+#overrideLimit {
+	width: 100px;
+	margin-right: 7px;
+}
+
 #time {
 	width: 130px;
 	margin-right: 7px;
 }
 
-#minuterow {
+#minuterow, #overrideLimitRow {
 	width: max-content;
 	margin: auto;
 }

@@ -269,6 +269,11 @@ function checkReset() {
 				override = false;
 				timeLeft = data.timeLimit*60;
 
+				// reset number of available overrides for today
+				chrome.storage.local.get({"overrideLimit":5}, function(data) {
+					chrome.storage.local.set({"currentOverrideCount": data.overrideLimit});
+				});
+
 			});
 
 		} else {
