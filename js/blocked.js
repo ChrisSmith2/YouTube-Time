@@ -50,5 +50,5 @@ chrome.storage.local.get({"overrideLimit":5}, function(data) {
 });
 
 function isYoutubeVideo(url) {
-	return url.match(/(https?:\/\/(.+?\.)?youtube\.com\/watch([A-Za-z0-9\-\._~:\/\?#\[\]@!$&'\(\)\*\+,;\=]*)?)/)
+	return url.match(/(https?:\/\/(.+?\.)?youtube(kids)?.com\/watch([A-Za-z0-9\-\._~:\/\?#\[\]@!$&'\(\)\*\+,;\=]*)?)/)
 }
