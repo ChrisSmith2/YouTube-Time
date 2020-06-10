@@ -106,7 +106,7 @@ $("#override").click(function() {
 		});
 	}
 	password_prompt("Enter Password below to add more time.", "Submit", "Enter Desired time:", (answer, minutes) => {
- 		if (answer === 'p1nkp34ch35') {
+ 		if (answer === 'portlandrocks') {
  			chrome.runtime.sendMessage({
  				msg: "override", 
  				value: minutes
