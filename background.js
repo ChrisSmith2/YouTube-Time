@@ -165,11 +165,11 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
 function isYoutube(url) {
 	// regex from https://stackoverflow.com/a/32730577
-	return url.match(/(https?:\/\/(.+?\.)?youtube\.com(\/[A-Za-z0-9\-\._~:\/\?#\[\]@!$&'\(\)\*\+,;\=]*)?)/)
+	return url.match(/(https?:\/\/(.+?\.)?youtube(kids)?\.com(\/[A-Za-z0-9\-\._~:\/\?#\[\]@!$&'\(\)\*\+,;\=]*)?)/)
 }
 
 function isYoutubeVideo(url) {
-	return url.match(/(https?:\/\/(.+?\.)?youtube\.com\/watch([A-Za-z0-9\-\._~:\/\?#\[\]@!$&'\(\)\*\+,;\=]*)?)/)
+	return url.match(/(https?:\/\/(.+?\.)?youtube(kids)?\.com\/watch([A-Za-z0-9\-\._~:\/\?#\[\]@!$&'\(\)\*\+,;\=]*)?)/)
 }
 
 function updateTime() {
