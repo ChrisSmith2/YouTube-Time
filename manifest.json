@@ -12,7 +12,10 @@
   },
   "content_scripts": [
     {
-        "matches": ["*://*.youtube.com/*"],
+        "matches": [
+          "*://*.youtube.com/*",
+          "*://*.youtubekids.com/*"
+        ],
         "js": ["saveVideo.js"]
     }
   ],
