@@ -15,6 +15,7 @@ var popupOpen = false;
 var pauseOutOfFocus = true;
 var youtubekidsEnabled = true;
 var checkBrowserFocusTimer = null;
+var timer = null;
 
 // chrome.storage.local.set({"lastDate":(new Date().getDate()-1).toString()}); //for debugging
 
@@ -155,8 +156,19 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	} else if (request.msg == "youtubekidsEnabled") {
 		if (request.val == true) {
 			youtubekidsEnabled = true;
+
+			if (!pauseOutOfFocus) {
+				// In case youtubekids.com is currently active in another window
+				checkWindowsForTimerStart();
+			}
 		} else {
 			youtubekidsEnabled = false;
+
+			if (!pauseOutOfFocus) {
+				// In case no youtube.com tabs are active 
+				// (timer was only running because of youtubekids.com tab(s))
+				checkWindowsForTimerStop();
+			}
 		}
 	} else if (request.msg == "resetTimeUpdated") {
 		chrome.storage.local.get({"resetTime":"00:00"}, function(data) {
@@ -191,6 +203,7 @@ function updateTime() {
 		timeLeft--;
 	} else {
 		clearInterval(timer);
+		timer = null;
 		blockRedirect();
 	}
 	chrome.browserAction.setBadgeText({"text": formatTime(timeLeft)});
@@ -215,6 +228,7 @@ function startTime() {
 function stopTime() {
 	// console.log("stopped", timeLeft)
 	clearInterval(timer);
+	timer = null;
 	chrome.browserAction.setBadgeText({"text": ""});
 }
 
@@ -351,6 +365,9 @@ function checkTabForYouTube(url) {
 }
 
 function checkWindowsForTimerStart() {
+	if (timer != null)
+		return
+
 	chrome.tabs.query({active: true}, function(tabs) {
 		var youtubeOpenOnAnyWindow = false;
 		for (var i = 0; i < tabs.length; i++) {
