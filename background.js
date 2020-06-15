@@ -6,20 +6,24 @@ chrome.runtime.onInstalled.addListener(function (object) {
 	}
 });
 
+// Default values
 var override = false;
 var onYoutube = false;
 var timeLeft = 1800;
 var currentTab;
 var popupOpen = false;
 var pauseOutOfFocus = true;
+var youtubekidsEnabled = true;
 var checkBrowserFocusTimer = null;
+
 // chrome.storage.local.set({"lastDate":(new Date().getDate()-1).toString()}); //for debugging
 
 checkReset();
 
-chrome.storage.local.get({"override":override, "pauseOutOfFocus":pauseOutOfFocus}, function(data) {
+chrome.storage.local.get({"override":override, "pauseOutOfFocus":pauseOutOfFocus, "youtubekidsEnabled":youtubekidsEnabled}, function(data) {
 	override = data.override;
 	pauseOutOfFocus = data.pauseOutOfFocus;
+	youtubekidsEnabled = data.youtubekidsEnabled;
 
 	if (pauseOutOfFocus) {
 		checkBrowserFocusTimer = setInterval(checkBrowserFocus, 1000);
@@ -148,6 +152,12 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			// see if window is open that has YouTube
 			checkWindowsForTimerStart();
 		}
+	} else if (request.msg == "youtubekidsEnabled") {
+		if (request.val == true) {
+			youtubekidsEnabled = true;
+		} else {
+			youtubekidsEnabled = false;
+		}
 	} else if (request.msg == "resetTimeUpdated") {
 		chrome.storage.local.get({"resetTime":"00:00"}, function(data) {
 			var now = new Date();
@@ -165,11 +175,15 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
 function isYoutube(url) {
 	// regex from https://stackoverflow.com/a/32730577
-	return url.match(/(https?:\/\/(.+?\.)?youtube(kids)?\.com(\/[A-Za-z0-9\-\._~:\/\?#\[\]@!$&'\(\)\*\+,;\=]*)?)/)
+	if (youtubekidsEnabled)
+		return url.match(/(https?:\/\/(.+?\.)?youtube(kids)?\.com(\/[A-Za-z0-9\-\._~:\/\?#\[\]@!$&'\(\)\*\+,;\=]*)?)/)
+	return url.match(/(https?:\/\/(.+?\.)?youtube\.com(\/[A-Za-z0-9\-\._~:\/\?#\[\]@!$&'\(\)\*\+,;\=]*)?)/)
 }
 
 function isYoutubeVideo(url) {
-	return url.match(/(https?:\/\/(.+?\.)?youtube(kids)?\.com\/watch([A-Za-z0-9\-\._~:\/\?#\[\]@!$&'\(\)\*\+,;\=]*)?)/)
+	if (youtubekidsEnabled)
+		return url.match(/(https?:\/\/(.+?\.)?youtube(kids)?\.com\/watch([A-Za-z0-9\-\._~:\/\?#\[\]@!$&'\(\)\*\+,;\=]*)?)/)
+	return url.match(/(https?:\/\/(.+?\.)?youtube\.com\/watch([A-Za-z0-9\-\._~:\/\?#\[\]@!$&'\(\)\*\+,;\=]*)?)/)
 }
 
 function updateTime() {

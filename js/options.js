@@ -16,6 +16,10 @@ chrome.storage.local.get({"pauseOutOfFocus":true}, function(data) {
 		$('#pauseOutOfFocus').prop('checked', true);
 });
 
+chrome.storage.local.get({"youtubekidsEnabled":true}, function(data) {
+	if (data.youtubekidsEnabled == true)
+		$('#youtubekidsEnabled').prop('checked', true);
+});
 
 chrome.storage.local.get({"overrideLimit":5}, function(data) {
 	$("#overrideLimit").val(data.overrideLimit);
@@ -87,6 +91,18 @@ $('#pauseOutOfFocus').change(function() {
 		ga('send', {hitType: 'event', eventCategory: 'Settings', eventAction: 'Updated pause out of focus', eventLabel: "false", eventValue: 0});
 		chrome.storage.local.set({"pauseOutOfFocus": false});
 		chrome.runtime.sendMessage({msg: "pauseOutOfFocus", val: false});
+	}
+});
+
+$('#youtubekidsEnabled').change(function() {
+	if (this.checked) {
+		ga('send', {hitType: 'event', eventCategory: 'Settings', eventAction: 'Updated YouTube Kids enabled', eventLabel: "true", eventValue: 1});
+		chrome.storage.local.set({"youtubekidsEnabled": true});
+		chrome.runtime.sendMessage({msg: "youtubekidsEnabled", val: true});
+	} else {
+		ga('send', {hitType: 'event', eventCategory: 'Settings', eventAction: 'Updated YouTube Kids enabled', eventLabel: "false", eventValue: 0});
+		chrome.storage.local.set({"youtubekidsEnabled": false});
+		chrome.runtime.sendMessage({msg: "youtubekidsEnabled", val: false});
 	}
 });
 
