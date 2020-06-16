@@ -319,7 +319,13 @@ function checkReset() {
 		if(!data.lastDate || (today.getDate().toString() != data.lastDate && today.getHours() >= resetHour && today.getMinutes() >= resetMinute)) {
 			chrome.storage.local.get({"timeLimit":30}, function(data) {
 
-				chrome.storage.local.set({"lastDate":today.getDate().toString(), "override":false, "timeLeft":data.timeLimit*60}, function () {
+				chrome.storage.local.set({
+					"lastDate":today.getDate().toString(), 
+					"override":false, 
+					"timeLeft":data.timeLimit*60,
+					"savedVideoURLs":{},
+					"tempOverrideTabs":[]
+				}, function() {
 					chrome.runtime.sendMessage({
 						msg: "checkDone"
 					});
