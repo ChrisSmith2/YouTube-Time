@@ -125,9 +125,12 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			var tempOverrideTabs = data.tempOverrideTabs;
 			tempOverrideTabs.push(currentTab.id);
 			
-			chrome.storage.local.set({"override":request.value, "tempOverrideTabs":tempOverrideTabs}, function() {
-				var redirectURL = data.savedVideoURLs[currentTab.id];
-				chrome.tabs.update(currentTab.id, {url: redirectURL});
+			var savedVideoURLs = data.savedVideoURLs;
+			if (!savedVideoURLs[currentTab.id])
+				savedVideoURLs[currentTab.id] = "https://www.youtube.com/";
+
+			chrome.storage.local.set({"override":request.value, "tempOverrideTabs":tempOverrideTabs, "savedVideoURLs":savedVideoURLs}, function() {
+				chrome.tabs.update(currentTab.id, {url: savedVideoURLs[currentTab.id]});
 			}); 
 		});
 	} else if (request.msg == "checkReset") {
