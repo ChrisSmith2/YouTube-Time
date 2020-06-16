@@ -119,10 +119,16 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	if (request.msg == "override") {
 		override = request.value;
 		// console.log("override")
-		chrome.storage.local.set({"override":request.value, "tempOverride":true}, function() {
-			chrome.runtime.sendMessage({
-				msg: "goToSavedVideo"
-			});			
+		chrome.storage.local.get({"savedVideoURLs":{}, "tempOverrideTabs":[]}, function(data) {
+			// Effectively setting tempOverride to true for currentTab
+			// (by adding the tab id to the tempOverrideTabs array)
+			var tempOverrideTabs = data.tempOverrideTabs;
+			tempOverrideTabs.push(currentTab.id);
+			
+			chrome.storage.local.set({"override":request.value, "tempOverrideTabs":tempOverrideTabs}, function() {
+				var redirectURL = data.savedVideoURLs[currentTab.id];
+				chrome.tabs.update(currentTab.id, {url: redirectURL});
+			}); 
 		});
 	} else if (request.msg == "checkReset") {
 		checkReset();
@@ -264,20 +270,27 @@ function blockRedirect() {
 	// console.log("tabs[0].url: " + currentTab)
 	// console.log(isYoutubeVideo(tabs[0].url))
 
-	if (isYoutubeVideo(currentTab.url)) {
-		// request videoURL with time
-		chrome.tabs.sendMessage(currentTab.id, {msg:"saveVideoURL"}, function(response){
-			// console.log("response: " + response)
-			chrome.storage.local.set({"savedVideoURL": response}, function() {
+	chrome.storage.local.get({"savedVideoURLs":{}}, function(data) {
+		var videoURLs = data.savedVideoURLs;
+
+		if (isYoutubeVideo(currentTab.url)) {
+			// request videoURL with time
+			chrome.tabs.sendMessage(currentTab.id, {msg:"saveVideoURL"}, function(response){
+				// console.log("response: " + response)
+				videoURLs[currentTab.id] = response;
+				chrome.storage.local.set({"savedVideoURLs": videoURLs}, function() {
+					chrome.tabs.update(currentTab.id, {url: "/pages/blocked.html"});
+				});
+			});
+		} else {
+			// if not on a youtube video
+			videoURLs[currentTab.id] = currentTab.url;
+			chrome.storage.local.set({"savedVideoURLs": videoURLs}, function() {
 				chrome.tabs.update(currentTab.id, {url: "/pages/blocked.html"});
 			});
-		});
-	} else {
-		// if not on a youtube video
-		chrome.storage.local.set({"savedVideoURL": currentTab.url}, function() {
-			chrome.tabs.update(currentTab.id, {url: "/pages/blocked.html"});
-		});
-	}
+		}
+
+	});
 }
 
 function checkReset() {
@@ -319,14 +332,34 @@ function checkOverride(url) {
 
 	// allows user to override and go back to most recent video
 	// but not go to any other videos
-	chrome.storage.local.get({savedVideoURL:"", tempOverride:false}, function(data) {
+	chrome.storage.local.get({savedVideoURLs:{}, tempOverrideTabs:[]}, function(data) {
 		// console.log("current url: " + url);
-		// console.log("allowed url: " + data.savedVideoURL);
+		// console.log("allowed url: " + data.savedVideoURLs);
 
-		if (urlNoTime(url) != urlNoTime(data.savedVideoURL) || !data.tempOverride) {
+		var videoURLs = data.savedVideoURLs;
+		var tempOverrideTabs = data.tempOverrideTabs;
+
+		var urlMatch = false;
+		for (var tabId in videoURLs) {
+			if (urlNoTime(videoURLs[tabId]) == urlNoTime(url)) {
+				urlMatch = true;
+				break;
+			}
+		}
+
+		var tempOverride = tempOverrideTabs.includes(currentTab.id);
+
+		if (!urlMatch || !tempOverride) {
 		// if url doesn't match one that was saved or tempoverride isn't true
-		
-			chrome.storage.local.set({savedVideoURL: currentTab.url, tempOverride: false}, function() {
+			videoURLs[currentTab.id] = currentTab.url;
+
+			// Effectively setting tempOverride to false for currentTab
+			// (by removing the tab id from the tempOverrideTabs array)
+			var index = tempOverrideTabs.indexOf(currentTab.id);
+			if (index !== -1)
+				tempOverrideTabs.splice(index, 1);
+
+			chrome.storage.local.set({savedVideoURLs: videoURLs, tempOverrideTabs: tempOverrideTabs}, function() {
 				chrome.tabs.update(currentTab.id, {url: "/pages/blocked.html"});
 			});
 

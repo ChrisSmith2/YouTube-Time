@@ -1,13 +1,5 @@
 ga('send', 'pageview', '/blocked.html');
 
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-	if (request.msg == "goToSavedVideo") {
-		chrome.storage.local.get("savedVideoURL", function(data) {
-			chrome.tabs.update({url: data.savedVideoURL});
-		}); 
-	}
-});
-
 $("#override").click(function() {
 	var answer = confirm("Are you sure you need to use YouTube?")
 	if (answer) {
