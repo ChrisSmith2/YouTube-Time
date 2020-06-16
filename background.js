@@ -58,6 +58,20 @@ chrome.tabs.onUpdated.addListener(function(tabId, changedInfo, tab) {
 	}
 });
 
+chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
+	if (tabId) {
+		// Removes id of closed tab from savedVideoURLs and tempOverrideTabs (if present)
+		chrome.storage.local.get({savedVideoURLs:{}, tempOverrideTabs:[]}, function(data) {
+			delete data.savedVideoURLs[tabId];
+
+			var index = data.tempOverrideTabs.indexOf(tabId);
+			if (index !== -1)
+				data.tempOverrideTabs.splice(index, 1);
+			chrome.storage.local.set({savedVideoURLs: data.savedVideoURLs, tempOverrideTabs: data.tempOverrideTabs});
+		});	
+	}
+});
+
 function checkBrowserFocus(){
 	if(typeof timer != 'undefined') {
 		chrome.windows.getLastFocused(function(window){
