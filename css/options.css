@@ -1,5 +1,5 @@
 #container {
-	width: 70%;
+	width: 80%;
 	margin: 50px auto;
 	text-align: center;
 }
@@ -31,4 +31,16 @@
 .big-checkbox {
 	width: 30px;
 	height: 30px;
+}
+
+.medium-checkbox {
+	width: 20px;
+	height: 20px;
+	margin-top: 0.2rem;
+	margin-left: -1.5rem;
+}
+
+.day-label {
+	width: 100px;
+	text-align: right;
 }
