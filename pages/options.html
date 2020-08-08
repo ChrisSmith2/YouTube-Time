@@ -17,113 +17,113 @@
 		</div>
 
 		<div class="row justify-content-center">
-			<label for="customizeLimit"><h4>Customize limit for each day: </h4></label>
-			<input id="customizeLimit" class="big-checkbox ml-2" type="checkbox">
+			<label for="customizeLimits"><h4>Customize limit for each day of the week: </h4></label>
+			<input id="customizeLimits" class="big-checkbox ml-2" type="checkbox">
 		</div>
 
-		<div id="customLimitsDiv">
-			<div class="form-row align-items-center justify-content-center">
+		<div id="customLimitsDiv" style="display: none;">
+			<div data-day="sunday" class="day-row form-row align-items-center justify-content-center">
 				<div class="col-auto">
 					<label for="sundayMinutes" class="day-label">Sunday</label>
 				</div>
 				<div class="col-auto mb-2">
-					<input id="sundayMinutes" class="form-control" type="number" min="0" max="1439">
+					<input id="sundayMinutes" class="form-control day-minute-input" type="number" min="0" max="1439">
 				</div>
 				<div class="col-auto mr-4 mb-2">
-					<input type="submit" id="saveSundayMinutes" value="Save Limit" class="btn btn-info">
+					<input type="submit" id="saveSundayMinutes" value="Save Limit" class="btn btn-info save-day-limit">
 				</div>
 				<div class="form-check mb-2">
-					<input class="medium-checkbox form-check-input" type="checkbox" id="sundayNoLimit">
+					<input class="medium-checkbox form-check-input no-limit-input" type="checkbox" id="sundayNoLimit">
 					<label class="form-check-label" for="sundayNoLimit">No limit</label>
 				</div>
 			</div>
-			<div class="form-row align-items-center justify-content-center">
+			<div data-day="monday" class="day-row form-row align-items-center justify-content-center">
 				<div class="col-auto">
 					<label for="mondayMinutes" class="day-label">Monday</label>
 				</div>
 				<div class="col-auto mb-2">
-					<input id="mondayMinutes" class="form-control" type="number" min="0" max="1439">
+					<input id="mondayMinutes" class="form-control day-minute-input" type="number" min="0" max="1439">
 				</div>
 				<div class="col-auto mr-4 mb-2">
-					<input type="submit" id="saveMondayMinutes" value="Save Limit" class="btn btn-info">
+					<input type="submit" id="saveMondayMinutes" value="Save Limit" class="btn btn-info save-day-limit">
 				</div>
 				<div class="form-check mb-2">
-					<input class="medium-checkbox form-check-input" type="checkbox" id="mondayNoLimit">
+					<input class="medium-checkbox form-check-input no-limit-input" type="checkbox" id="mondayNoLimit">
 					<label class="form-check-label" for="mondayNoLimit">No limit</label>
 				</div>
 			</div>
-			<div class="form-row align-items-center justify-content-center">
+			<div data-day="tuesday" class="day-row form-row align-items-center justify-content-center">
 				<div class="col-auto">
 					<label for="tuesdayMinutes" class="day-label">Tuesday</label>
 				</div>
 				<div class="col-auto mb-2">
-					<input id="tuesdayMinutes" class="form-control" type="number" min="0" max="1439">
+					<input id="tuesdayMinutes" class="form-control day-minute-input" type="number" min="0" max="1439">
 				</div>
 				<div class="col-auto mr-4 mb-2">
-					<input type="submit" id="saveTuesdayMinutes" value="Save Limit" class="btn btn-info">
+					<input type="submit" id="saveTuesdayMinutes" value="Save Limit" class="btn btn-info save-day-limit">
 				</div>
 				<div class="form-check mb-2">
-					<input class="medium-checkbox form-check-input" type="checkbox" id="tuesdayNoLimit">
+					<input class="medium-checkbox form-check-input no-limit-input" type="checkbox" id="tuesdayNoLimit">
 					<label class="form-check-label" for="tuesdayNoLimit">No limit</label>
 				</div>
 			</div>
-			<div class="form-row align-items-center justify-content-center">
+			<div data-day="wednesday" class="day-row form-row align-items-center justify-content-center">
 				<div class="col-auto">
 					<label for="wednesdayMinutes" class="day-label">Wednesday</label>
 				</div>
 				<div class="col-auto mb-2">
-					<input id="wednesdayMinutes" class="form-control" type="number" min="0" max="1439">
+					<input id="wednesdayMinutes" class="form-control day-minute-input" type="number" min="0" max="1439">
 				</div>
 				<div class="col-auto mr-4 mb-2">
-					<input type="submit" id="saveWednesdayMinutes" value="Save Limit" class="btn btn-info">
+					<input type="submit" id="saveWednesdayMinutes" value="Save Limit" class="btn btn-info save-day-limit">
 				</div>
 				<div class="form-check mb-2">
-					<input class="medium-checkbox form-check-input" type="checkbox" id="wednesdayNoLimit">
+					<input class="medium-checkbox form-check-input no-limit-input" type="checkbox" id="wednesdayNoLimit">
 					<label class="form-check-label" for="wednesdayNoLimit">No limit</label>
 				</div>
 			</div>
-			<div class="form-row align-items-center justify-content-center">
+			<div data-day="thursday" class="day-row form-row align-items-center justify-content-center">
 				<div class="col-auto">
 					<label for="thursdayMinutes" class="day-label">Thursday</label>
 				</div>
 				<div class="col-auto mb-2">
-					<input id="thursdayMinutes" class="form-control" type="number" min="0" max="1439">
+					<input id="thursdayMinutes" class="form-control day-minute-input" type="number" min="0" max="1439">
 				</div>
 				<div class="col-auto mr-4 mb-2">
-					<input type="submit" id="saveThursdayMinutes" value="Save Limit" class="btn btn-info">
+					<input type="submit" id="saveThursdayMinutes" value="Save Limit" class="btn btn-info save-day-limit">
 				</div>
 				<div class="form-check mb-2">
-					<input class="medium-checkbox form-check-input" type="checkbox" id="thursdayNoLimit">
+					<input class="medium-checkbox form-check-input no-limit-input" type="checkbox" id="thursdayNoLimit">
 					<label class="form-check-label" for="thursdayNoLimit">No limit</label>
 				</div>
 			</div>
-			<div class="form-row align-items-center justify-content-center">
+			<div data-day="friday" class="day-row form-row align-items-center justify-content-center">
 				<div class="col-auto">
 					<label for="fridayMinutes" class="day-label">Friday</label>
 				</div>
 				<div class="col-auto mb-2">
-					<input id="fridayMinutes" class="form-control" type="number" min="0" max="1439">
+					<input id="fridayMinutes" class="form-control day-minute-input" type="number" min="0" max="1439">
 				</div>
 				<div class="col-auto mr-4 mb-2">
-					<input type="submit" id="saveFridayMinutes" value="Save Limit" class="btn btn-info">
+					<input type="submit" id="saveFridayMinutes" value="Save Limit" class="btn btn-info save-day-limit">
 				</div>
 				<div class="form-check mb-2">
-					<input class="medium-checkbox form-check-input" type="checkbox" id="fridayNoLimit">
+					<input class="medium-checkbox form-check-input no-limit-input" type="checkbox" id="fridayNoLimit">
 					<label class="form-check-label" for="fridayNoLimit">No limit</label>
 				</div>
 			</div>
-			<div class="form-row align-items-center justify-content-center">
+			<div data-day="saturday" class="day-row form-row align-items-center justify-content-center">
 				<div class="col-auto">
 					<label for="saturdayMinutes" class="day-label">Saturday</label>
 				</div>
 				<div class="col-auto mb-2">
-					<input id="saturdayMinutes" class="form-control" type="number" min="0" max="1439">
+					<input id="saturdayMinutes" class="form-control day-minute-input" type="number" min="0" max="1439">
 				</div>
 				<div class="col-auto mr-4 mb-2">
-					<input type="submit" id="saveSaturdayMinutes" value="Save Limit" class="btn btn-info">
+					<input type="submit" id="saveSaturdayMinutes" value="Save Limit" class="btn btn-info save-day-limit">
 				</div>
 				<div class="form-check mb-2">
-					<input class="medium-checkbox form-check-input" type="checkbox" id="saturdayNoLimit">
+					<input class="medium-checkbox form-check-input no-limit-input" type="checkbox" id="saturdayNoLimit">
 					<label class="form-check-label" for="saturdayNoLimit">No limit</label>
 				</div>
 			</div>

@@ -117,3 +117,30 @@ $('#limitOverrides').change(function() {
 		chrome.storage.local.set({"limitOverrides": false});
 	}
 });
+
+$("#customizeLimits").change(function() {
+	if (this.checked) {
+		$("#customLimitsDiv").show();
+	} else {
+		$("#customLimitsDiv").hide();
+	}
+});
+
+$("#customizeLimits").change(function() {
+	if (this.checked) {
+		$("#customLimitsDiv").show();
+		$("#minutes, #saveMinutes").prop("disabled", true);
+	} else {
+		$("#customLimitsDiv").hide();
+		$("#minutes, #saveMinutes").prop("disabled", false);
+	}
+});
+
+$(".no-limit-input").change(function() {
+	var day = $(this).closest(".day-row").data("day");
+	if (this.checked) {
+		$(this).closest(".day-row").find(".save-day-limit, .day-minute-input").prop("disabled", true);
+	} else {
+		$(this).closest(".day-row").find(".save-day-limit, .day-minute-input").prop("disabled", false);
+	}
+});
