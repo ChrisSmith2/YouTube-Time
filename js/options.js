@@ -11,6 +11,36 @@ chrome.storage.local.get({"timeLimit":30}, function(data) {
 	$("#minutes").val(data.timeLimit);
 });
 
+function populateDayLimits() {
+	chrome.storage.local.get({"dayLimits":{}, "timeLimit":30}, function(data) {
+		var dayLimits = data.dayLimits;
+		var dayDivs = $(".day-row").each(function(i) {
+			var day = $(this).data("day");
+			var minuteInput = $(this).find(".day-minute-input");
+			if (day in dayLimits) {
+				if (dayLimits[day] === false) {
+					$(this).find(".save-day-limit, .day-minute-input").prop("disabled", true);
+					$(this).find(".no-limit-input").prop('checked', true);
+				} else {
+					minuteInput.val(dayLimits[day]);
+				}
+			} else {
+				minuteInput.val(data.timeLimit);
+			}
+		});
+
+		$("#customLimitsDiv").show();
+	});
+}
+
+chrome.storage.local.get({"customizeLimits":false}, function(data) {
+	if (data.customizeLimits == true) {
+		$('#customizeLimits').prop('checked', true);
+		$("#minutes, #saveMinutes").prop("disabled", true);
+		populateDayLimits();
+	}
+});
+
 chrome.storage.local.get({"pauseOutOfFocus":true}, function(data) {
 	if (data.pauseOutOfFocus == true)
 		$('#pauseOutOfFocus').prop('checked', true);
@@ -120,17 +150,26 @@ $('#limitOverrides').change(function() {
 
 $("#customizeLimits").change(function() {
 	if (this.checked) {
-		$("#customLimitsDiv").show();
+		chrome.storage.local.get({"timeLimit":30}, function(data) {
+			$("#minutes").val(data.timeLimit);
+		});
+		populateDayLimits();
 	} else {
+		chrome.storage.local.set({"dayLimits":{}});
 		$("#customLimitsDiv").hide();
+		$(".day-minute-input").val("");
+		$(".no-limit-input").prop('checked', false);
+		$(".save-day-limit, .day-minute-input").prop("disabled", false);
 	}
 });
 
 $("#customizeLimits").change(function() {
 	if (this.checked) {
+		chrome.storage.local.set({"customizeLimits": true});
 		$("#customLimitsDiv").show();
 		$("#minutes, #saveMinutes").prop("disabled", true);
 	} else {
+		chrome.storage.local.set({"customizeLimits": false});
 		$("#customLimitsDiv").hide();
 		$("#minutes, #saveMinutes").prop("disabled", false);
 	}
@@ -140,7 +179,43 @@ $(".no-limit-input").change(function() {
 	var day = $(this).closest(".day-row").data("day");
 	if (this.checked) {
 		$(this).closest(".day-row").find(".save-day-limit, .day-minute-input").prop("disabled", true);
+		$(this).closest(".day-row").find(".day-minute-input").val("");
+		chrome.storage.local.get({"dayLimits":{}}, function(data) {
+			data.dayLimits[day] = false;
+			chrome.storage.local.set({"dayLimits": data.dayLimits});
+		});
 	} else {
-		$(this).closest(".day-row").find(".save-day-limit, .day-minute-input").prop("disabled", false);
+		var noLimitInput = $(this);
+		chrome.storage.local.get({"dayLimits":{}, "timeLimit":30}, function(data) {
+			delete data.dayLimits[day];
+			chrome.storage.local.set({"dayLimits": data.dayLimits});
+			noLimitInput.closest(".day-row").find(".day-minute-input").val(data.timeLimit);
+			noLimitInput.closest(".day-row").find(".save-day-limit, .day-minute-input").prop("disabled", false);
+		});
 	}
+});
+
+$(".save-day-limit").click(function() {
+	var day = $(this).closest(".day-row").data("day");
+	var dayUpperCase = $(this).closest(".day-row").find(".day-label").text();
+	var minuteInput = $(this).closest(".day-row").find(".day-minute-input");
+	var minutes = Number(minuteInput.val());
+
+	if (minutes % 0.5 != 0) {
+		minutes = Math.round(minutes*2)/2; //rounds to nearest 0.5
+	}
+
+	if (minutes < 0) {
+		minutes = 0; 
+	} else if (minutes > 1439) {
+		minutes = 1439;
+	}
+	minuteInput.val(minutes);
+
+	chrome.storage.local.get({"dayLimits":{}}, function(data) {
+		data.dayLimits[day] = minutes;
+		chrome.storage.local.set({"dayLimits": data.dayLimits}, function() {
+			alert(dayUpperCase + " Limit Saved");
+		});
+	});
 });
