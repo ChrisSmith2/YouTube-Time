@@ -381,6 +381,8 @@ function checkReset() {
 					}
 				}
 				noLimit = noLimitTemp;
+				if (noLimit && timer != null)
+					stopTime();
 
 				chrome.storage.local.set({
 					"lastDate":today.getDate().toString(), 
