@@ -16,10 +16,23 @@ var pauseOutOfFocus = true;
 var youtubekidsEnabled = true;
 var checkBrowserFocusTimer = null;
 var timer = null;
+var noLimit = false;
 
 // chrome.storage.local.set({"lastDate":(new Date().getDate()-1).toString()}); //for debugging
 
 checkReset();
+
+var days = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+// Updates noLimit variable
+chrome.storage.local.get({"customizeLimits":false, "dayLimits":{}}, function(data) {
+	if (data.customizeLimits) {
+		var today = new Date();
+		var day = days[today.getDay()];
+		if (day in data.dayLimits && data.dayLimits[day] === false) {
+			noLimit = true;
+		}
+	}
+});
 
 chrome.storage.local.get({"override":override, "pauseOutOfFocus":pauseOutOfFocus, "youtubekidsEnabled":youtubekidsEnabled}, function(data) {
 	override = data.override;
@@ -317,12 +330,27 @@ function checkReset() {
 		var resetHour = parseInt(resetTime[0]);
 		var resetMinute = parseInt(resetTime[1]);
 		if(!data.lastDate || (today.getDate().toString() != data.lastDate && today.getHours() >= resetHour && today.getMinutes() >= resetMinute)) {
-			chrome.storage.local.get({"timeLimit":30}, function(data) {
+			chrome.storage.local.get({"timeLimit":30, "customizeLimits":false, "dayLimits":{}}, function(data) {
+				var timeLimit = data.timeLimit;
+				var dayLimits = data.dayLimits;
+
+				var noLimitTemp = false;
+				if (data.customizeLimits) {
+					var day = days[today.getDay()];
+					if (day in dayLimits) {
+						if (dayLimits[day] === false) {
+							noLimitTemp = true;
+						} else {
+							timeLimit = dayLimits[day];
+						}
+					}
+				}
+				noLimit = noLimitTemp;
 
 				chrome.storage.local.set({
 					"lastDate":today.getDate().toString(), 
 					"override":false, 
-					"timeLeft":data.timeLimit*60,
+					"timeLeft":timeLimit*60,
 					"savedVideoURLs":{},
 					"tempOverrideTabs":[]
 				}, function() {
@@ -331,7 +359,7 @@ function checkReset() {
 					});
 				});
 				override = false;
-				timeLeft = data.timeLimit*60;
+				timeLeft = timeLimit*60;
 
 				// reset number of available overrides for today
 				chrome.storage.local.get({"overrideLimit":5}, function(data) {
@@ -402,6 +430,9 @@ function urlNoTime(url) {
 function checkTabForYouTube(url) {
 	// console.log("checkTabForYouTube")
 	if (isYoutube(url) && !onYoutube) {
+		if (noLimit)
+			return;
+
 		if (!override) {
 			onYoutube = true;
 			startTime();	
