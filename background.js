@@ -222,17 +222,20 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		var today = new Date();
 		var day = days[today.getDay()];
 		if (request.day == day) { // day is today
-			chrome.storage.local.get({"dayLimits":{}}, function(data) {
+			chrome.storage.local.get({"dayLimits":{}, "timeLimit":30}, function(data) {
 				if (day in data.dayLimits && data.dayLimits[day] === false) {
 					noLimit = true;
 					if (timer != null)
 						stopTime();
 				} else {
 					noLimit = false;
-					if (!pauseOutOfFocus) {
-						// In case youtube is currently active in another window
-						checkWindowsForTimerStart();
-					}
+					timeLeft = data.timeLimit*60;
+					chrome.storage.local.set({"timeLeft": timeLeft}, function() {
+						if (!pauseOutOfFocus) {
+							// In case youtube is currently active in another window
+							checkWindowsForTimerStart();
+						}
+					});
 				}
 			});
 		}
@@ -245,6 +248,11 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 				chrome.storage.local.set({"timeLeft": timeLeft});
 			});
 		}
+	} else if (request.msg == "customizeLimitsFalse") {
+		chrome.storage.local.get({"timeLimit":30}, function(data) {
+			timeLeft = data.timeLimit*60;
+			chrome.storage.local.set({"timeLeft": timeLeft});
+		});
 	}
 });
 

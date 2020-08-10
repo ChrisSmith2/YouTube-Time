@@ -160,6 +160,9 @@ $("#customizeLimits").change(function() {
 		$(".day-minute-input").val("");
 		$(".no-limit-input").prop('checked', false);
 		$(".save-day-limit, .day-minute-input").prop("disabled", false);
+		chrome.runtime.sendMessage({
+			msg: "customizeLimitsFalse"
+		});
 	}
 });
 
