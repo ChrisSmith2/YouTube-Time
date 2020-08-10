@@ -22,9 +22,15 @@ chrome.runtime.sendMessage({
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	if (request.msg == "checkDone") {
-		chrome.storage.local.get("timeLeft", function(data) {
-			$("#time").text(formatTime(data.timeLeft) + " remaining")
-		});
+		if (request.noLimit) {
+			$("#time").addClass("noLimit");
+			$("#time").text("No time limit");
+		} else {
+			chrome.storage.local.get("timeLeft", function(data) {
+				$("#time").removeClass("noLimit");
+				$("#time").text(formatTime(data.timeLeft) + " remaining");
+			});
+		}
 
 		chrome.storage.local.get("override", function(data) {
 			if (data.override) {
@@ -36,6 +42,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	if (request.msg == "updateTime") {
+		$("#time").removeClass("noLimit");
 		$("#time").text(formatTime(request.time) + " remaining");
 	}
 });

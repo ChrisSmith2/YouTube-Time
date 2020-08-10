@@ -355,7 +355,8 @@ function checkReset() {
 					"tempOverrideTabs":[]
 				}, function() {
 					chrome.runtime.sendMessage({
-						msg: "checkDone"
+						msg: "checkDone",
+						noLimit: noLimit
 					});
 				});
 				override = false;
@@ -370,7 +371,8 @@ function checkReset() {
 
 		} else {
 			chrome.runtime.sendMessage({
-				msg: "checkDone"
+				msg: "checkDone",
+				noLimit: noLimit
 			});
 		}
 	});
