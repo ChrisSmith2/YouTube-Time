@@ -158,6 +158,7 @@ $("#customizeLimits").change(function() {
 			$("#minutes").val(data.timeLimit);
 		});
 		populateDayLimits();
+		ga('send', {hitType: 'event', eventCategory: 'Settings', eventAction: 'Updated customize limits', eventLabel: "true", eventValue: 1});
 	} else {
 		chrome.storage.local.set({"customizeLimits": false});
 		$("#customLimitsDiv").hide();
@@ -170,6 +171,7 @@ $("#customizeLimits").change(function() {
 		chrome.runtime.sendMessage({
 			msg: "customizeLimitsFalse"
 		});
+		ga('send', {hitType: 'event', eventCategory: 'Settings', eventAction: 'Updated customize limits', eventLabel: "false", eventValue: 0});
 	}
 });
 
@@ -187,6 +189,7 @@ $(".no-limit-input").change(function() {
 				});	
 			});
 		});
+		ga('send', {hitType: 'event', eventCategory: 'Settings', eventAction: 'Updated ' + day + ' no limit', eventLabel: "true", eventValue: 1});
 	} else {
 		var noLimitInput = $(this);
 		chrome.storage.local.get({"dayLimits":{}, "timeLimit":30}, function(data) {
@@ -200,6 +203,7 @@ $(".no-limit-input").change(function() {
 			noLimitInput.closest(".day-row").find(".day-minute-input").val(data.timeLimit);
 			noLimitInput.closest(".day-row").find(".save-day-limit, .day-minute-input").prop("disabled", false);
 		});
+		ga('send', {hitType: 'event', eventCategory: 'Settings', eventAction: 'Updated ' + day + ' no limit', eventLabel: "false", eventValue: 0});
 	}
 });
 
@@ -230,4 +234,5 @@ $(".save-day-limit").click(function() {
 			alert(dayUpperCase + " Limit Saved");
 		});
 	});
+	ga('send', {hitType: 'event', eventCategory: 'Settings', eventAction: 'Updated ' + day + ' time limit', eventValue: minutes});
 });
