@@ -182,13 +182,23 @@ $(".no-limit-input").change(function() {
 		$(this).closest(".day-row").find(".day-minute-input").val("");
 		chrome.storage.local.get({"dayLimits":{}}, function(data) {
 			data.dayLimits[day] = false;
-			chrome.storage.local.set({"dayLimits": data.dayLimits});
+			chrome.storage.local.set({"dayLimits": data.dayLimits}, function() {
+				chrome.runtime.sendMessage({
+					msg: "noLimitInputChange",
+					day: day
+				});	
+			});
 		});
 	} else {
 		var noLimitInput = $(this);
 		chrome.storage.local.get({"dayLimits":{}, "timeLimit":30}, function(data) {
 			delete data.dayLimits[day];
-			chrome.storage.local.set({"dayLimits": data.dayLimits});
+			chrome.storage.local.set({"dayLimits": data.dayLimits}, function() {
+				chrome.runtime.sendMessage({
+					msg: "noLimitInputChange",
+					day: day
+				});	
+			});
 			noLimitInput.closest(".day-row").find(".day-minute-input").val(data.timeLimit);
 			noLimitInput.closest(".day-row").find(".save-day-limit, .day-minute-input").prop("disabled", false);
 		});

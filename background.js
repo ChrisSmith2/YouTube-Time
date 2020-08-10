@@ -218,6 +218,24 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 				chrome.storage.local.set({"lastDate":"-1"});
 			}
 		});
+	} else if (request.msg == "noLimitInputChange") {
+		var today = new Date();
+		var day = days[today.getDay()];
+		if (request.day == day) { // day is today
+			chrome.storage.local.get({"dayLimits":{}}, function(data) {
+				if (day in data.dayLimits && data.dayLimits[day] === false) {
+					noLimit = true;
+					if (timer != null)
+						stopTime();
+				} else {
+					noLimit = false;
+					if (!pauseOutOfFocus) {
+						// In case youtube is currently active in another window
+						checkWindowsForTimerStart();
+					}
+				}
+			});
+		}
 	}
 });
 
