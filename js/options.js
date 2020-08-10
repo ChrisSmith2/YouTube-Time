@@ -150,31 +150,26 @@ $('#limitOverrides').change(function() {
 
 $("#customizeLimits").change(function() {
 	if (this.checked) {
+		chrome.storage.local.set({"customizeLimits": true});
+		$("#customLimitsDiv").show();
+		$("#minutes, #saveMinutes").prop("disabled", true);
+
 		chrome.storage.local.get({"timeLimit":30}, function(data) {
 			$("#minutes").val(data.timeLimit);
 		});
 		populateDayLimits();
 	} else {
-		chrome.storage.local.set({"dayLimits":{}});
+		chrome.storage.local.set({"customizeLimits": false});
 		$("#customLimitsDiv").hide();
+		$("#minutes, #saveMinutes").prop("disabled", false);
+
+		chrome.storage.local.set({"dayLimits":{}});
 		$(".day-minute-input").val("");
 		$(".no-limit-input").prop('checked', false);
 		$(".save-day-limit, .day-minute-input").prop("disabled", false);
 		chrome.runtime.sendMessage({
 			msg: "customizeLimitsFalse"
 		});
-	}
-});
-
-$("#customizeLimits").change(function() {
-	if (this.checked) {
-		chrome.storage.local.set({"customizeLimits": true});
-		$("#customLimitsDiv").show();
-		$("#minutes, #saveMinutes").prop("disabled", true);
-	} else {
-		chrome.storage.local.set({"customizeLimits": false});
-		$("#customLimitsDiv").hide();
-		$("#minutes, #saveMinutes").prop("disabled", false);
 	}
 });
 

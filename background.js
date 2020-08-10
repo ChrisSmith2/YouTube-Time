@@ -143,116 +143,128 @@ chrome.windows.onFocusChanged.addListener(function(windowId) {
 });
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-	if (request.msg == "override") {
-		override = request.value;
-		// console.log("override")
-		chrome.storage.local.get({"savedVideoURLs":{}, "tempOverrideTabs":[]}, function(data) {
-			// Effectively setting tempOverride to true for currentTab
-			// (by adding the tab id to the tempOverrideTabs array)
-			var tempOverrideTabs = data.tempOverrideTabs;
-			tempOverrideTabs.push(currentTab.id);
-			
-			var savedVideoURLs = data.savedVideoURLs;
-			if (!savedVideoURLs[currentTab.id])
-				savedVideoURLs[currentTab.id] = "https://www.youtube.com/";
+	switch(request.msg) {
+		case "override":
+			override = request.value;
+			// console.log("override")
+			chrome.storage.local.get({"savedVideoURLs":{}, "tempOverrideTabs":[]}, function(data) {
+				// Effectively setting tempOverride to true for currentTab
+				// (by adding the tab id to the tempOverrideTabs array)
+				var tempOverrideTabs = data.tempOverrideTabs;
+				tempOverrideTabs.push(currentTab.id);
+				
+				var savedVideoURLs = data.savedVideoURLs;
+				if (!savedVideoURLs[currentTab.id])
+					savedVideoURLs[currentTab.id] = "https://www.youtube.com/";
 
-			chrome.storage.local.set({"override":request.value, "tempOverrideTabs":tempOverrideTabs, "savedVideoURLs":savedVideoURLs}, function() {
-				chrome.tabs.update(currentTab.id, {url: savedVideoURLs[currentTab.id]});
-			}); 
-		});
-	} else if (request.msg == "checkReset") {
-		checkReset();
-	} else if (request.msg == "timeLimitUpdated") {
-		chrome.storage.local.get({"timeLeft":timeLeft}, function(data) {
-			timeLeft = data.timeLeft;
-		});
-	} else if (request.msg == "popupOpen") {
-		popupOpen = true;
-	} else if (request.msg == "popupUnfocus") {
-		popupOpen = false;
-	} else if (request.msg == "pauseOutOfFocus") {
-		if (request.val == true) {
-			pauseOutOfFocus = true;
-			if (checkBrowserFocusTimer == null)
-				checkBrowserFocusTimer = setInterval(checkBrowserFocus, 1000);
+				chrome.storage.local.set({"override":request.value, "tempOverrideTabs":tempOverrideTabs, "savedVideoURLs":savedVideoURLs}, function() {
+					chrome.tabs.update(currentTab.id, {url: savedVideoURLs[currentTab.id]});
+				}); 
+			});
+			break;
+		case "checkReset":
+			checkReset();
+			break;
+		case "timeLimitUpdated":
+			chrome.storage.local.get({"timeLeft":timeLeft}, function(data) {
+				timeLeft = data.timeLeft;
+			});
+			break;
+		case "popupOpen":
+			popupOpen = true;
+			break;
+		case "popupUnfocus":
+			popupOpen = false;
+			break;
+		case "pauseOutOfFocus":
+			if (request.val == true) {
+				pauseOutOfFocus = true;
+				if (checkBrowserFocusTimer == null)
+					checkBrowserFocusTimer = setInterval(checkBrowserFocus, 1000);
 
-			if(typeof timer != 'undefined') {
-				// stop timer because active window must be settings page
-				onYoutube = false;
-				stopTime();
-			}
-		} else {
-			pauseOutOfFocus = false;
-			clearInterval(checkBrowserFocusTimer);
-			checkBrowserFocusTimer = null;
+				if(typeof timer != 'undefined') {
+					// stop timer because active window must be settings page
+					onYoutube = false;
+					stopTime();
+				}
+			} else {
+				pauseOutOfFocus = false;
+				clearInterval(checkBrowserFocusTimer);
+				checkBrowserFocusTimer = null;
 
-			// see if window is open that has YouTube
-			checkWindowsForTimerStart();
-		}
-	} else if (request.msg == "youtubekidsEnabled") {
-		if (request.val == true) {
-			youtubekidsEnabled = true;
-
-			if (!pauseOutOfFocus) {
-				// In case youtubekids.com is currently active in another window
+				// see if window is open that has YouTube
 				checkWindowsForTimerStart();
 			}
-		} else {
-			youtubekidsEnabled = false;
+			break;
+		case "youtubekidsEnabled":
+			if (request.val == true) {
+				youtubekidsEnabled = true;
 
-			if (!pauseOutOfFocus) {
-				// In case no youtube.com tabs are active 
-				// (timer was only running because of youtubekids.com tab(s))
-				checkWindowsForTimerStop();
+				if (!pauseOutOfFocus) {
+					// In case youtubekids.com is currently active in another window
+					checkWindowsForTimerStart();
+				}
+			} else {
+				youtubekidsEnabled = false;
+
+				if (!pauseOutOfFocus) {
+					// In case no youtube.com tabs are active 
+					// (timer was only running because of youtubekids.com tab(s))
+					checkWindowsForTimerStop();
+				}
 			}
-		}
-	} else if (request.msg == "resetTimeUpdated") {
-		chrome.storage.local.get({"resetTime":"00:00"}, function(data) {
-			var now = new Date();
-			var resetTime = data.resetTime.split(":");
-			var resetHour = parseInt(resetTime[0]);
-			var resetMinute = parseInt(resetTime[1]);
-			if (now.getHours() <= resetHour && now.getMinutes() < resetMinute) {
-				// Ensures that time resets when changing resetTime to time in the future
-				// Allows user to test different reset times and see the timer reset
-				chrome.storage.local.set({"lastDate":"-1"});
-			}
-		});
-	} else if (request.msg == "noLimitInputChange") {
-		var today = new Date();
-		var day = days[today.getDay()];
-		if (request.day == day) { // day is today
-			chrome.storage.local.get({"dayLimits":{}, "timeLimit":30}, function(data) {
-				if (day in data.dayLimits && data.dayLimits[day] === false) {
-					noLimit = true;
-					if (timer != null)
-						stopTime();
-				} else {
-					noLimit = false;
-					timeLeft = data.timeLimit*60;
-					chrome.storage.local.set({"timeLeft": timeLeft}, function() {
-						if (!pauseOutOfFocus) {
-							// In case youtube is currently active in another window
-							checkWindowsForTimerStart();
-						}
-					});
+			break;
+		case "resetTimeUpdated":
+			chrome.storage.local.get({"resetTime":"00:00"}, function(data) {
+				var now = new Date();
+				var resetTime = data.resetTime.split(":");
+				var resetHour = parseInt(resetTime[0]);
+				var resetMinute = parseInt(resetTime[1]);
+				if (now.getHours() <= resetHour && now.getMinutes() < resetMinute) {
+					// Ensures that time resets when changing resetTime to time in the future
+					// Allows user to test different reset times and see the timer reset
+					chrome.storage.local.set({"lastDate":"-1"});
 				}
 			});
-		}
-	} else if (request.msg == "dayTimeLimitUpdated") {
-		var today = new Date();
-		var day = days[today.getDay()];
-		if (request.day == day) { // day is today
-			chrome.storage.local.get({"dayLimits":{}}, function(data) {
-				timeLeft = data.dayLimits[day]*60;
+			break;
+		case "noLimitInputChange":
+			var today = new Date();
+			var day = days[today.getDay()];
+			if (request.day == day) { // day is today
+				chrome.storage.local.get({"dayLimits":{}, "timeLimit":30}, function(data) {
+					if (day in data.dayLimits && data.dayLimits[day] === false) {
+						noLimit = true;
+						if (timer != null)
+							stopTime();
+					} else {
+						noLimit = false;
+						timeLeft = data.timeLimit*60;
+						chrome.storage.local.set({"timeLeft": timeLeft}, function() {
+							if (!pauseOutOfFocus) {
+								// In case youtube is currently active in another window
+								checkWindowsForTimerStart();
+							}
+						});
+					}
+				});
+			}
+			break;
+		case "dayTimeLimitUpdated":
+			var today = new Date();
+			var day = days[today.getDay()];
+			if (request.day == day) { // day is today
+				chrome.storage.local.get({"dayLimits":{}}, function(data) {
+					timeLeft = data.dayLimits[day]*60;
+					chrome.storage.local.set({"timeLeft": timeLeft});
+				});
+			}
+			break;
+		case "customizeLimitsFalse":
+			chrome.storage.local.get({"timeLimit":30}, function(data) {
+				timeLeft = data.timeLimit*60;
 				chrome.storage.local.set({"timeLeft": timeLeft});
 			});
-		}
-	} else if (request.msg == "customizeLimitsFalse") {
-		chrome.storage.local.get({"timeLimit":30}, function(data) {
-			timeLeft = data.timeLimit*60;
-			chrome.storage.local.set({"timeLeft": timeLeft});
-		});
+			break;
 	}
 });
 
