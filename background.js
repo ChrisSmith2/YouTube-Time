@@ -489,7 +489,7 @@ function checkTabForYouTube(url) {
 }
 
 function checkWindowsForTimerStart() {
-	if (timer != null)
+	if (timer != null || noLimit)
 		return
 
 	chrome.tabs.query({active: true}, function(tabs) {
