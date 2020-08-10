@@ -225,6 +225,10 @@ $(".save-day-limit").click(function() {
 	chrome.storage.local.get({"dayLimits":{}}, function(data) {
 		data.dayLimits[day] = minutes;
 		chrome.storage.local.set({"dayLimits": data.dayLimits}, function() {
+			chrome.runtime.sendMessage({
+				msg: "dayTimeLimitUpdated",
+				day: day
+			});
 			alert(dayUpperCase + " Limit Saved");
 		});
 	});

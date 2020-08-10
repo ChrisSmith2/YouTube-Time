@@ -236,6 +236,15 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 				}
 			});
 		}
+	} else if (request.msg == "dayTimeLimitUpdated") {
+		var today = new Date();
+		var day = days[today.getDay()];
+		if (request.day == day) { // day is today
+			chrome.storage.local.get({"dayLimits":{}}, function(data) {
+				timeLeft = data.dayLimits[day]*60;
+				chrome.storage.local.set({"timeLeft": timeLeft});
+			});
+		}
 	}
 });
 
